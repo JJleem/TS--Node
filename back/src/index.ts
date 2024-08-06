@@ -4,7 +4,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import contactRouter from "./router/contactRoutes";
+import editRouter from "./router/editRoutes";
 import { Contact } from "./models/contactModel";
+import { editContact, getContact } from "./controllers/contactController";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -19,7 +21,20 @@ mongoose
 
 // 데이터 추가 라우트
 app.use("/add", contactRouter);
-
+app.put("/contacts/:id", editContact);
+app.get("/contacts/:id", getContact);
+app.get("/data", async (req, res) => {
+  try {
+    const contacts = await Contact.find(); // MongoDB에서 모든 연락처 데이터 조회
+    res.status(200).json(contacts); // 클라이언트에 JSON 형식으로 데이터 전송
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ message: err.message }); // 오류 발생 시 메시지 전송
+    } else {
+      res.status(500).json({ message: "An unknown error occurred." });
+    }
+  }
+});
 app.post("/data", async (req, res) => {
   const { name, email, phone } = req.body;
   const data = new Contact({ name, email, phone });

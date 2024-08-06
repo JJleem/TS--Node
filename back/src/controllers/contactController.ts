@@ -3,6 +3,20 @@ import { Request, Response, NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import { Contact } from "../models/contactModel";
 
+export const getContact = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { id } = req.params;
+    const contact = await Contact.findById(id);
+
+    if (!contact) {
+      res.status(404).json({ message: "Contact not found" });
+      return; // 명시적으로 void 반환
+    }
+
+    res.status(200).json(contact);
+  }
+);
+
 export const createContact = asyncHandler(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -21,6 +35,28 @@ export const createContact = asyncHandler(
   }
 );
 
+export const editContact = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { id } = req.params;
+    const { name, email, phone } = req.body;
+
+    // MongoDB에서 연락처 업데이트
+    const updatedContact = await Contact.findByIdAndUpdate(
+      id,
+      { name, email, phone },
+      { new: true } // 수정된 데이터를 반환
+    );
+
+    // 업데이트된 연락처가 없을 경우 404 응답
+    if (!updatedContact) {
+      res.status(404).json({ message: "Contact not found" });
+      return; // 여기서 반환하여 함수 종료
+    }
+
+    // 성공적으로 업데이트된 연락처 반환
+    res.status(200).json(updatedContact);
+  }
+);
 // app.post("/data", async (req, res) => {
 //   const { name, value } = req.body;
 //   const data = new DataModel({ name, value });

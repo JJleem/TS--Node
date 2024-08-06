@@ -18,11 +18,11 @@ const Add = () => {
         setName("");
         setEmail("");
         setPhone("");
-        alert("회원가입에 성공하셨습니다!");
+        alert("데이터 저장에 성공하였습니다!");
         navigate("/all");
       } catch (error) {
         console.error("Error adding data:", error);
-        alert("회원가입에 실패하였습니다.");
+        alert("데이터 저장에 실패하였습니다.");
       }
     } else {
       alert("모든 필드를 입력하세요."); // 모든 필드가 입력되지 않았을 때 경고
