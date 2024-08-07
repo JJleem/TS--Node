@@ -10,4 +10,4 @@ const registerSchema = new mongoose.Schema(
   }
 );
 
-export const Contact = mongoose.model("Register", registerSchema);
+export const Register = mongoose.model("Register", registerSchema);

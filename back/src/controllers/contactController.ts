@@ -3,16 +3,17 @@ import { Request, Response, NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import { Contact } from "../models/contactModel";
 
+import jwt from "jsonwebtoken";
+import express from "express";
+
 export const getContact = asyncHandler(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { id } = req.params;
     const contact = await Contact.findById(id);
-
     if (!contact) {
       res.status(404).json({ message: "Contact not found" });
       return; // 명시적으로 void 반환
     }
-
     res.status(200).json(contact);
   }
 );
@@ -23,10 +24,15 @@ export const createContact = asyncHandler(
       const { name, email, phone } = req.body;
       if (!name || !email || !phone) {
         res.status(400).send("필수값이 입력되지 않았습니다.");
-        return;
+        return; // 추가
       }
 
-      const contact = await Contact.create({ name, email, phone });
+      const contact = await Contact.create({
+        name,
+        email,
+        phone,
+      });
+
       res.status(201).json(contact); // 생성된 연락처 반환
     } catch (error) {
       console.error(error);
@@ -63,3 +69,15 @@ export const editContact = asyncHandler(
 //   await data.save();
 //   res.status(201).send(data);
 // });
+export const deleteContact = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const contact = await Contact.findById(req.params.id);
+    if (!contact) {
+      res.status(404).send("Contact not found");
+    }
+    await Contact.deleteOne({ _id: req.params.id });
+
+    res.redirect("/contacts");
+    return; // 명시적으로 void를 반환
+  }
+);

@@ -4,9 +4,15 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import contactRouter from "./router/contactRoutes";
-import editRouter from "./router/editRoutes";
+import registerRouter from "./router/registerRoutes";
+import loginRouter from "./router/loginRoutes";
 import { Contact } from "./models/contactModel";
-import { editContact, getContact } from "./controllers/contactController";
+import {
+  deleteContact,
+  editContact,
+  getContact,
+} from "./controllers/contactController";
+// import { authMiddleware } from "./middleware/JWTtoken";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -20,9 +26,14 @@ mongoose
   .catch((err) => console.error(err));
 
 // 데이터 추가 라우트
-app.use("/add", contactRouter);
+
+app.use("/contacts", contactRouter);
+app.use("/register", registerRouter);
+app.use("/login", loginRouter);
+app.get("/account");
 app.put("/contacts/:id", editContact);
 app.get("/contacts/:id", getContact);
+app.delete("/contacts/:id", deleteContact);
 app.get("/data", async (req, res) => {
   try {
     const contacts = await Contact.find(); // MongoDB에서 모든 연락처 데이터 조회
